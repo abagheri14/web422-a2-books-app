@@ -1,91 +1,74 @@
-import { useForm } from "react-hook-form";
-import { useRouter } from "next/router";
 import { useState } from "react";
-import { Card, Button, Form } from "react-bootstrap";
-import Link from "next/link";
+import { useRouter } from "next/router";
 import { registerUser } from "@/lib/authenticate";
+import { Button, Form, Alert } from "react-bootstrap";
+import PageHeader from "@/components/PageHeader"; // Add this for consistency
 
 export default function Register() {
   const router = useRouter();
-  const { register, handleSubmit, formState: { errors } } = useForm();
-  const [serverError, setServerError] = useState("");
+  const [user, setUser] = useState("");
+  const [password, setPassword] = useState("");
+  const [password2, setPassword2] = useState("");
+  const [warning, setWarning] = useState("");
 
-  async function onSubmit(data) {
-    setServerError("");
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-    if (data.password !== data.confirmPassword) {
-      setServerError("Passwords do not match");
+    if (password !== password2) {
+      setWarning("Passwords do not match.");
       return;
     }
+    
+    // Clear warning before new attempt
+    setWarning(""); 
+    
+    // Use the updated registerUser that returns the full response object
+    const res = await registerUser(user, password, password2);
 
-    try {
-      await registerUser({
-        userName: data.userName,
-        password: data.password,
-        email: data.email || null
-      });
+    if (res.status === 200) {
+      // Registration successful
+      router.push("/login");
+    } else {
+      // Registration failed (422 is expected here)
+      
+      let message = "Registration failed.";
+      
+      // Try to get the detailed error message from the backend (if available)
+      try {
+        const data = await res.json();
+        message = data.message || message;
+      } catch (err) {
+        // If res.json() fails, stick with generic message
+      }
 
-      router.push("/login?register=success");
-    } catch (err) {
-      setServerError(err.message || "Registration failed");
+      setWarning(message);
     }
-  }
+  };
 
   return (
-    <Card className="p-4 shadow-sm">
-      <h2 className="mb-3 text-center">Register</h2>
-
-      {serverError && <p className="alert alert-danger">{serverError}</p>}
-
-      <Form onSubmit={handleSubmit(onSubmit)}>
-
+    <>
+      <PageHeader text="Register" subtext="Register for an account" /> 
+      {warning && <Alert variant="danger">{warning}</Alert>}
+      <Form onSubmit={handleSubmit}>
         <Form.Group className="mb-3">
           <Form.Label>Username</Form.Label>
-          <Form.Control
-            {...register("userName", { required: true })}
-            type="text"
-            placeholder="Enter username"
-          />
-          {errors.userName && <small className="text-danger">Username is required</small>}
+          <Form.Control type="text" value={user} onChange={(e) => setUser(e.target.value)} />
         </Form.Group>
-
         <Form.Group className="mb-3">
           <Form.Label>Email (Optional)</Form.Label>
-          <Form.Control
-            {...register("email")}
-            type="email"
-            placeholder="Enter email"
-          />
+          {/* Email field based on your previous screenshot */}
+          <Form.Control type="email" /> 
         </Form.Group>
-
         <Form.Group className="mb-3">
           <Form.Label>Password</Form.Label>
-          <Form.Control
-            {...register("password", { required: true })}
-            type="password"
-            placeholder="Enter password"
-          />
-          {errors.password && <small className="text-danger">Password is required</small>}
+          <Form.Control type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
         </Form.Group>
-
         <Form.Group className="mb-3">
           <Form.Label>Confirm Password</Form.Label>
-          <Form.Control
-            {...register("confirmPassword", { required: true })}
-            type="password"
-            placeholder="Confirm password"
-          />
-          {errors.confirmPassword && <small className="text-danger">Confirm your password</small>}
+          <Form.Control type="password" value={password2} onChange={(e) => setPassword2(e.target.value)} />
         </Form.Group>
-
-        <div className="d-grid">
-          <Button type="submit" variant="primary">Create Account</Button>
-        </div>
+        <Button type="submit">Create Account</Button>
       </Form>
-
-      <p className="mt-3 text-center">
-        Already have an account? <Link href="/login">Login</Link>
-      </p>
-    </Card>
+    </>
   );
 }
