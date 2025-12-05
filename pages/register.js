@@ -1,50 +1,91 @@
-import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { useRouter } from "next/router";
+import { useState } from "react";
+import { Card, Button, Form } from "react-bootstrap";
+import Link from "next/link";
 import { registerUser } from "@/lib/authenticate";
-import { Button, Form, Alert } from "react-bootstrap";
 
 export default function Register() {
   const router = useRouter();
-  const [user, setUser] = useState("");
-  const [password, setPassword] = useState("");
-  const [password2, setPassword2] = useState("");
-  const [warning, setWarning] = useState("");
+  const { register, handleSubmit, formState: { errors } } = useForm();
+  const [serverError, setServerError] = useState("");
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  async function onSubmit(data) {
+    setServerError("");
 
-    if (password !== password2) {
-      setWarning("Passwords do not match.");
+    if (data.password !== data.confirmPassword) {
+      setServerError("Passwords do not match");
       return;
     }
 
-    const success = await registerUser(user, password, password2);
-    if (success) {
-      router.push("/login");
-    } else {
-      setWarning("Registration failed.");
+    try {
+      await registerUser({
+        userName: data.userName,
+        password: data.password,
+        email: data.email || null
+      });
+
+      router.push("/login?register=success");
+    } catch (err) {
+      setServerError(err.message || "Registration failed");
     }
-  };
+  }
 
   return (
-    <>
-      <h1>Register</h1>
-      {warning && <Alert variant="danger">{warning}</Alert>}
-      <Form onSubmit={handleSubmit}>
-        <Form.Group>
+    <Card className="p-4 shadow-sm">
+      <h2 className="mb-3 text-center">Register</h2>
+
+      {serverError && <p className="alert alert-danger">{serverError}</p>}
+
+      <Form onSubmit={handleSubmit(onSubmit)}>
+
+        <Form.Group className="mb-3">
           <Form.Label>Username</Form.Label>
-          <Form.Control type="text" onChange={(e) => setUser(e.target.value)} />
+          <Form.Control
+            {...register("userName", { required: true })}
+            type="text"
+            placeholder="Enter username"
+          />
+          {errors.userName && <small className="text-danger">Username is required</small>}
         </Form.Group>
-        <Form.Group>
+
+        <Form.Group className="mb-3">
+          <Form.Label>Email (Optional)</Form.Label>
+          <Form.Control
+            {...register("email")}
+            type="email"
+            placeholder="Enter email"
+          />
+        </Form.Group>
+
+        <Form.Group className="mb-3">
           <Form.Label>Password</Form.Label>
-          <Form.Control type="password" onChange={(e) => setPassword(e.target.value)} />
+          <Form.Control
+            {...register("password", { required: true })}
+            type="password"
+            placeholder="Enter password"
+          />
+          {errors.password && <small className="text-danger">Password is required</small>}
         </Form.Group>
-        <Form.Group>
+
+        <Form.Group className="mb-3">
           <Form.Label>Confirm Password</Form.Label>
-          <Form.Control type="password" onChange={(e) => setPassword2(e.target.value)} />
+          <Form.Control
+            {...register("confirmPassword", { required: true })}
+            type="password"
+            placeholder="Confirm password"
+          />
+          {errors.confirmPassword && <small className="text-danger">Confirm your password</small>}
         </Form.Group>
-        <Button type="submit">Register</Button>
+
+        <div className="d-grid">
+          <Button type="submit" variant="primary">Create Account</Button>
+        </div>
       </Form>
-    </>
+
+      <p className="mt-3 text-center">
+        Already have an account? <Link href="/login">Login</Link>
+      </p>
+    </Card>
   );
 }
