@@ -9,7 +9,6 @@ import { Spinner } from 'react-bootstrap'; // Needed for loading state
 export default function Favourites() {
   const [favouritesList] = useAtom(favouritesAtom);
 
-  // 🛑 FIX: Handle the loading state before accessing '.length' (Assignment Step 4)
   if (!favouritesList) return <Spinner animation="border" role="status" />;
 
   if (!favouritesList.length) {
