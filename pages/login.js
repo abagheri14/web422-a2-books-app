@@ -1,68 +1,63 @@
-import { useForm } from "react-hook-form";
-import { useRouter } from "next/router";
-import { loginUser, setToken } from "@/lib/authenticate";
-import { Card, Button, Form } from "react-bootstrap";
 import { useState } from "react";
+import { useRouter } from "next/router";
+import { useAtom } from "jotai";
+import { favouritesAtom } from "@/store";
+import { authenticateUser } from "@/lib/authenticate";
+import { getFavourites } from "@/lib/userData";
+import { Button, Form, Alert } from "react-bootstrap";
+import PageHeader from "@/components/PageHeader"; // Assuming you use PageHeader here
 
 export default function Login() {
-  const { register, handleSubmit, formState: { errors } } = useForm();
   const router = useRouter();
-  const [serverError, setServerError] = useState("");
+  const [user, setUser] = useState("");
+  const [password, setPassword] = useState("");
+  const [warning, setWarning] = useState("");
+  const [favouritesList, setFavouritesList] = useAtom(favouritesAtom);
 
-  async function onSubmit(data) {
-    setServerError("");
-
-    try {
-      const token = await loginUser({
-        userName: data.userName,
-        password: data.password
-      });
-
-      setToken(token);
-      router.push("/favourites");
-      
-    } catch (err) {
-      setServerError(err.message || "Login failed");
-    }
+  async function updateAtom() {
+    setFavouritesList(await getFavourites());
   }
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setWarning(""); // Clear previous warning
+
+    // Use the correctly imported function
+    const success = await authenticateUser(user, password);
+    
+    if (success) {
+      await updateAtom();
+      router.push("/");
+    } else {
+      setWarning("Invalid login.");
+    }
+  };
+
   return (
-    <Card className="p-4 shadow-sm">
-      <h2 className="mb-3 text-center">Login</h2>
-
-      {router.query.register === "success" && (
-        <p className="alert alert-success">Account created — please log in.</p>
-      )}
-
-      {serverError && (
-        <p className="alert alert-danger">{serverError}</p>
-      )}
-
-      <Form onSubmit={handleSubmit(onSubmit)}>
+    <>
+      <PageHeader text="Login" subtext="Sign in to your account" />
+      {warning && <Alert variant="danger">{warning}</Alert>}
+      <Form onSubmit={handleSubmit}>
         <Form.Group className="mb-3">
           <Form.Label>Username</Form.Label>
-          <Form.Control
-            {...register("userName", { required: true })}
-            type="text"
-            placeholder="Enter username"
+          <Form.Control 
+            type="text" 
+            value={user} 
+            onChange={(e) => setUser(e.target.value)} 
+            required
           />
-          {errors.userName && <small className="text-danger">Username is required</small>}
         </Form.Group>
-
         <Form.Group className="mb-3">
           <Form.Label>Password</Form.Label>
           <Form.Control
-            {...register("password", { required: true })}
             type="password"
-            placeholder="Enter password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
           />
-          {errors.password && <small className="text-danger">Password is required</small>}
         </Form.Group>
-
-        <div className="d-grid">
-          <Button type="submit" variant="primary">Login</Button>
-        </div>
+        <Button type="submit">Login</Button>
       </Form>
-    </Card>
+    </>
   );
 }
