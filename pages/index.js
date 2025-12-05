@@ -1,3 +1,16 @@
+*********************************************************************************
+* WEB422 – Assignment 3
+*
+* I declare that this assignment is my own work in accordance with Seneca's
+* Academic Integrity Policy:
+*
+* https://www.senecapolytechnic.ca/about/policies/academic-integrity-policy.html
+*
+* Name: Ali Bagheri Student ID: 154404230 Date: 12/05/2025
+*
+* Vercel App (Deployed) Link: https://web422-a2-books-app.vercel.app/
+*
+********************************************************************************/
 import { useRouter } from 'next/router';
 import { useForm } from 'react-hook-form';
 import { Button, Col, Form, Row } from 'react-bootstrap';
