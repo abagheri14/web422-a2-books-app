@@ -1,25 +1,2 @@
-[00:00:00.646] Server  LOG      ✓ Ready in 410ms
-[00:00:08.510] Browser ERROR   Warning: Extra attributes from the server: %s%s bis_skin_checked 
-    at div
-    at http://localhost:3000/_next/static/chunks/node_modules_9b8f3523._.js:4195:9
-    at http://localhost:3000/_next/static/chunks/node_modules_9b8f3523._.js:885:363
-    at div
-    at Transition (http://localhost:3000/_next/static/chunks/node_modules_9b8f3523._.js:6188:34)
-    at http://localhost:3000/_next/static/chunks/node_modules_9b8f3523._.js:1068:189
-    at http://localhost:3000/_next/static/chunks/node_modules_9b8f3523._.js:1174:180
-    at http://localhost:3000/_next/static/chunks/node_modules_9b8f3523._.js:1273:178
-    at div
-    at http://localhost:3000/_next/static/chunks/node_modules_9b8f3523._.js:735:173
-    at nav
-    at http://localhost:3000/_next/static/chunks/node_modules_9b8f3523._.js:1971:321
-    at MainNav
-    at MyApp (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__ee51a008._.js:570:18)
-    at PathnameContextProviderAdapter (http://localhost:3000/_next/static/chunks/node_modules_next_dist_shared_lib_4025f6b7._.js:5052:43)
-    at PagesDevOverlayErrorBoundary (http://localhost:3000/_next/static/chunks/node_modules_next_dist_7fdbac9b._.js:1149:9)
-    at PagesDevOverlayBridge (http://localhost:3000/_next/static/chunks/node_modules_next_dist_7fdbac9b._.js:1926:34)
-    at Container (http://localhost:3000/_next/static/chunks/node_modules_next_dist_client_3ede7da4._.js:3041:1)
-    at AppContainer (http://localhost:3000/_next/static/chunks/node_modules_next_dist_client_3ede7da4._.js:3140:25)
-    at Root (http://localhost:3000/_next/static/chunks/node_modules_next_dist_client_3ede7da4._.js:3348:17)
-[00:02:44.676] Server  LOG        Reload env: .env.local
-[00:02:44.784] Server  LOG      ✓ Compiled in 70ms
-[00:02:54.318] Browser ERROR   unhandledRejection: TypeError: Failed to fetch
+[00:00:00.728] Server  LOG      ✓ Ready in 453ms
+[00:00:09.285] Browser WARN    Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
